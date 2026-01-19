@@ -153,4 +153,4 @@ Modifications may be needed for Linux compatibility.
 
 ## License
 
-MIT
+This project is released under the MIT License. See the [LICENSE](https://github.com/DanielStormApps/claude-code-statusline/blob/main/LICENSE) file for more information.
