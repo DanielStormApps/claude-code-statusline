@@ -374,7 +374,7 @@ get_context_progress_bar() {
     # Set bar width and format based on threshold
     local bar_width
     local show_percentage=false
-    if [[ $percent_int -ge 80 ]]; then
+    if [[ $percent_int -ge 64 ]]; then
         bar_width=16
         show_percentage=true
         color_start="\033[31m"  # Red
@@ -394,7 +394,7 @@ get_context_progress_bar() {
         bar+="$empty_char"
     done
 
-    # Output the progress bar (with percentage only if >= 80%)
+    # Output the progress bar (with percentage only if >= 64%)
     if [[ "$show_percentage" == true ]]; then
         printf "\n%b[%s] %d%%%b" "$color_start" "$bar" "$percent_int" "$color_end"
     else

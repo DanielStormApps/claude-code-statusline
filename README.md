@@ -9,7 +9,7 @@ A custom statusline script for [Claude Code](https://claude.ai/code) that displa
 - **Version** - Claude Code version
 - **Internet speed** - Download/upload speeds (cached, updates hourly or on network change)
 - **Weather** - Current conditions and temperature with daily high/low
-- **Context usage** - Progress bar showing context window usage (turns red at 80%)
+- **Context usage** - Progress bar showing context window usage (turns red at 64%)
 - **SPM updates** - Swift Package Manager dependency update notifications
 
 ## Screenshot
@@ -131,8 +131,8 @@ Or from terminal:
 ## Context Progress Bar
 
 The progress bar shows context window usage:
-- **Below 80%**: Simple bar, no percentage shown
-- **80% and above**: Bar turns red, percentage displayed
+- **Below 64%**: Simple bar, no percentage shown
+- **64% and above**: Bar turns red, percentage displayed
 
 This gives you warning before Claude Code's auto-compact triggers (~95%).
 
