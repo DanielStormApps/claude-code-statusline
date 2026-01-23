@@ -417,21 +417,26 @@ get_weather() {
     local longitude="-122.400833"
     local timezone="America/Los_Angeles"
     
+    # Create location identifier for cache invalidation
+    local location_id="${latitude},${longitude}"
+
     # Check if cache exists and is fresh
     if [[ -f "$cache_file" ]]; then
         local cache_timestamp=$(head -1 "$cache_file" 2>/dev/null)
+        local cached_location=$(sed -n '2p' "$cache_file" 2>/dev/null)
         if [[ -n "$cache_timestamp" && "$cache_timestamp" =~ ^[0-9]+$ ]]; then
             local cache_age=$((current_time - cache_timestamp))
-            if [[ $cache_age -lt $cache_max_age ]]; then
+            # Use cache only if fresh AND location hasn't changed
+            if [[ $cache_age -lt $cache_max_age && "$cached_location" == "$location_id" ]]; then
                 use_cache=true
             fi
         fi
     fi
-    
+
     # Use cached data if fresh, otherwise fetch new data
     if [[ "$use_cache" == true ]]; then
-        # Read cached weather data (skip timestamp line)
-        weather_json=$(tail -n +2 "$cache_file" 2>/dev/null)
+        # Read cached weather data (skip timestamp and location lines)
+        weather_json=$(tail -n +3 "$cache_file" 2>/dev/null)
     else
         # Fetch fresh weather data from Open-Meteo API
         # Get current conditions plus daily high/low
@@ -440,9 +445,10 @@ get_weather() {
         
         # Cache the data if we got a valid response
         if [[ -n "$weather_json" && "$weather_json" != *"error"* ]]; then
-            # Store timestamp and weather data in cache file
+            # Store timestamp, location, and weather data in cache file
             {
                 echo "$current_time"
+                echo "$location_id"
                 echo "$weather_json"
             } > "$cache_file"
         fi
