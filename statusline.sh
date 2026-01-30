@@ -609,7 +609,7 @@ check_spm_updates() {
             fi
             
             # Display cached results with timestamp
-            printf "\n\033[33m%s\033[90m%s\033[0m" "$cached_updates" "$last_checked"
+            printf "\n%b\033[90m%s\033[0m" "$cached_updates" "$last_checked"
         fi
         return
     fi
@@ -759,7 +759,7 @@ check_spm_updates() {
                     last_checked=" (cached $((time_diff / 86400))d ago, rate limited)"
                 fi
 
-                printf "\n\033[33m%s\033[90m%s\033[0m" "$cached_updates" "$last_checked"
+                printf "\n%b\033[90m%s\033[0m" "$cached_updates" "$last_checked"
             fi
         fi
         return
@@ -770,14 +770,14 @@ check_spm_updates() {
         echo "$current_time"
         echo "$project_mod_time"
         if [[ -n "$updates_found" ]]; then
-            echo "SPM Updates Available:"
+            printf "\033[33mSPM Updates Available:\033[0m\n"
             echo -e "$updates_found"
         fi
     } > "$cache_file"
 
     # Output updates if any found
     if [[ -n "$updates_found" ]]; then
-        printf "\n\033[33mSPM Updates Available:\n%b\033[0m" "$updates_found"
+        printf "\n\033[33mSPM Updates Available:\033[0m\n%b" "$updates_found"
     else
         # If no updates found, show cached results if available
         if [[ -f "$cache_file" ]]; then
@@ -797,7 +797,7 @@ check_spm_updates() {
                     last_checked=" (checked $((time_diff / 86400))d ago)"
                 fi
 
-                printf "\n\033[33m%s\033[90m%s\033[0m" "$cached_updates" "$last_checked"
+                printf "\n%b\033[90m%s\033[0m" "$cached_updates" "$last_checked"
             fi
         fi
     fi
