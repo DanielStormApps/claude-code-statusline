@@ -676,12 +676,12 @@ check_spm_updates() {
         local github_path=$(echo "$repo_url" | sed -E 's|^https://github\.com/||; s|^git@github\.com:||; s|\.git$||')
         [[ ! "$github_path" =~ ^[^/]+/[^/]+$ ]] && continue
 
-        # Get latest release from GitHub API with rate limit detection
+        # Get latest version from GitHub tags API (matches how SPM resolves versions)
         local api_response
         if [[ -n "$auth_header" ]]; then
-            api_response=$(curl -s -i -m 5 -H "$auth_header" "https://api.github.com/repos/$github_path/releases/latest" 2>/dev/null)
+            api_response=$(curl -s -i -m 5 -H "$auth_header" "https://api.github.com/repos/$github_path/tags?per_page=10" 2>/dev/null)
         else
-            api_response=$(curl -s -i -m 5 "https://api.github.com/repos/$github_path/releases/latest" 2>/dev/null)
+            api_response=$(curl -s -i -m 5 "https://api.github.com/repos/$github_path/tags?per_page=10" 2>/dev/null)
         fi
 
         # Check for rate limit (403 status with rate limit message)
@@ -692,29 +692,13 @@ check_spm_updates() {
             fi
         fi
 
-        # Extract version from response body (skip headers, handle CRLF)
-        local latest_version=$(echo "$api_response" | tr -d '\r' | sed '1,/^$/d' | jq -r '.tag_name // empty' 2>/dev/null | sed 's/^v//')
-
-        # If releases API returned 404 (no releases), fall back to tags API
-        # This handles repos like RevenueCat/purchases-ios-spm that only use tags
-        if [[ -z "$latest_version" ]]; then
-            if echo "$api_response" | head -5 | grep -q "^HTTP.*404"; then
-                local tags_response
-                if [[ -n "$auth_header" ]]; then
-                    tags_response=$(curl -s -m 5 -H "$auth_header" "https://api.github.com/repos/$github_path/tags?per_page=20" 2>/dev/null)
-                else
-                    tags_response=$(curl -s -m 5 "https://api.github.com/repos/$github_path/tags?per_page=20" 2>/dev/null)
-                fi
-
-                # Extract semver tags only (filter out non-semver like "playgrounds-test-*")
-                # Match patterns like "5.51.1", "v5.51.1", "1.2.3", etc.
-                latest_version=$(echo "$tags_response" | jq -r '.[].name' 2>/dev/null | \
-                    grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | \
-                    sed 's/^v//' | \
-                    sort -t. -k1,1nr -k2,2nr -k3,3nr | \
-                    head -1)
-            fi
-        fi
+        # Extract semver tags only (filter out non-semver like "playgrounds-test-*")
+        # Match patterns like "5.51.1", "v5.51.1", "1.2.3", etc.
+        local latest_version=$(echo "$api_response" | tr -d '\r' | sed '1,/^$/d' | jq -r '.[].name' 2>/dev/null | \
+            grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sed 's/^v//' | \
+            sort -t. -k1,1nr -k2,2nr -k3,3nr | \
+            head -1)
 
         [[ -z "$latest_version" ]] && continue
 
