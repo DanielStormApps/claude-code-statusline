@@ -4,6 +4,7 @@ A custom statusline script for [Claude Code](https://claude.ai/code) that displa
 
 ## Features
 
+- **Directory** - Short path showing current working directory
 - **Git branch** - Current branch name
 - **Model ID** - Active Claude model
 - **Version** - Claude Code version
@@ -15,7 +16,7 @@ A custom statusline script for [Claude Code](https://claude.ai/code) that displa
 ## Screenshot
 
 ```
-⎇ main | claude-opus-4-5-20251101 | v1.0.45 | ↓ 150Mbps ↑ 12Mbps | sunny 72°F (78°F/65°F)
+~/projects/my-app | ⎇ main | claude-opus-4-5-20251101 | v1.0.45 | ↓ 150Mbps ↑ 12Mbps | sunny 72°F (78°F/65°F)
 [████████████░░░░░░░░]
 SPM Updates Available:
   SomePackage: 1.0.0 → 1.1.0 (https://github.com/owner/repo)

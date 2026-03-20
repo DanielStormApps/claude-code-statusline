@@ -787,8 +787,15 @@ check_spm_updates() {
     fi
 }
 
+# Build short path from last 2 directory components
+short_path=$(echo "$current_dir" | awk -F'/' '{print $(NF-1)"/"$NF}')
+if [[ "$current_dir" == "$HOME"* ]]; then
+    short_path="~/$short_path"
+fi
+
 # Format and output the status line
-printf "⎇ %s | %s | v%s%s%s" \
+printf "%s | ⎇ %s | %s | v%s%s%s" \
+    "$short_path" \
     "$git_branch" \
     "$model_id" \
     "$version" \
